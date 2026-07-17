@@ -101,7 +101,7 @@ const SETTLE_MS = 260;
 // Web Mercator: metres per screen pixel depends on latitude, so each circle is
 // converted using its own.
 const metresPerPixel = (lat, zoom) =>
-  (40075016.686 * Math.cos((lat * Math.PI) / 180)) / (256 * 2 ** zoom);
+    (40075016.686 * Math.cos((lat * Math.PI) / 180)) / (256 * 2 ** zoom);
 
 // The size a circle should end up on screen. It grows as you zoom in, but far
 // slower than the map does, so it stays readable at street level.
@@ -112,7 +112,7 @@ function targetPixels(cigs, zoom) {
 }
 
 const targetRadius = (marker, zoom) =>
-  targetPixels(marker.__cigs, zoom) * metresPerPixel(marker.getLatLng().lat, zoom);
+    targetPixels(marker.__cigs, zoom) * metresPerPixel(marker.getLatLng().lat, zoom);
 
 const el = (id) => document.getElementById(id);
 const statusEl = el("status");
@@ -175,7 +175,14 @@ new ResizeObserver(() => {
   map.setMinZoom(0);
   map.setMinZoom(map.getBoundsZoom(OVERLAY_BOUNDS, true));
   map.setMaxBounds(OVERLAY_BOUNDS);
-  if (!userMoved) map.fitBounds(ONTARIO_VIEW);
+  // Open at the floor set just above — the most zoomed-out the map ever goes —
+  // rather than fitting tight to Ontario. Centered a few degrees south of
+  // Ontario's true center so the view sits slightly lower in the pane instead
+  // of centered on it.
+  if (!userMoved) {
+    const center = ONTARIO_VIEW.getCenter();
+    map.setView([center.lat - 0.5, center.lng], map.getMinZoom());
+  }
 }).observe(mapEl);
 
 let smokeOverlay = null;
@@ -197,12 +204,12 @@ let fires = []; // { id, at, area, firstdate, lastdate }
 const wmsTime = (ms) => new Date(ms).toISOString().replace(/\.\d{3}Z$/, "Z");
 
 const labelFor = (ms) =>
-  new Date(ms).toLocaleString("en-CA", {
-    weekday: "short",
-    hour: "numeric",
-    hour12: true,
-    timeZone: "America/Toronto",
-  });
+    new Date(ms).toLocaleString("en-CA", {
+      weekday: "short",
+      hour: "numeric",
+      hour12: true,
+      timeZone: "America/Toronto",
+    });
 
 // One image for the whole province rather than a tiled layer. GeoMet's render
 // cost is almost flat in image size — 256x256 measured ~430ms against ~370ms for
@@ -271,11 +278,11 @@ function overlayUrl(key, ms) {
   const ne = L.CRS.EPSG3857.project(OVERLAY_BOUNDS.getNorthEast());
   const height = Math.round((OVERLAY_WIDTH * (ne.y - sw.y)) / (ne.x - sw.x));
   return (
-    `${GEOMET}?service=WMS&version=1.3.0&request=GetMap` +
-    `&layers=${encodeURIComponent(cfg.layer)}&styles=${encodeURIComponent(cfg.style)}` +
-    `&crs=EPSG:3857&bbox=${sw.x},${sw.y},${ne.x},${ne.y}` +
-    `&width=${OVERLAY_WIDTH}&height=${height}` +
-    `&format=image/png&transparent=true&time=${wmsTime(ms)}`
+      `${GEOMET}?service=WMS&version=1.3.0&request=GetMap` +
+      `&layers=${encodeURIComponent(cfg.layer)}&styles=${encodeURIComponent(cfg.style)}` +
+      `&crs=EPSG:3857&bbox=${sw.x},${sw.y},${ne.x},${ne.y}` +
+      `&width=${OVERLAY_WIDTH}&height=${height}` +
+      `&format=image/png&transparent=true&time=${wmsTime(ms)}`
   );
 }
 
@@ -305,14 +312,14 @@ async function bufferLoop() {
 
   buffered = 0;
   await Promise.all(
-    Array.from({ length: 4 }, async () => {
-      while (queue.length) {
-        if (run !== bufferRun || key !== currentLayerKey) return;
-        await preloadFrame(queue.shift(), key);
-        buffered++;
-        setStatus();
-      }
-    })
+      Array.from({ length: 4 }, async () => {
+        while (queue.length) {
+          if (run !== bufferRun || key !== currentLayerKey) return;
+          await preloadFrame(queue.shift(), key);
+          buffered++;
+          setStatus();
+        }
+      })
   );
   if (run === bufferRun) setStatus();
 }
@@ -337,17 +344,17 @@ function setSmokeLayer(key) {
   bufferLoop();
 
   el("wms-legend").src =
-    `${GEOMET}?service=WMS&version=1.3.0&request=GetLegendGraphic` +
-    `&layer=${encodeURIComponent(cfg.layer)}&style=${encodeURIComponent(cfg.style)}` +
-    `&format=image/png&sld_version=1.1.0`;
+      `${GEOMET}?service=WMS&version=1.3.0&request=GetLegendGraphic` +
+      `&layer=${encodeURIComponent(cfg.layer)}&style=${encodeURIComponent(cfg.style)}` +
+      `&format=image/png&sld_version=1.1.0`;
 }
 
 // The forecast run advances twice a day, so the valid time range has to come from
 // the service rather than being assumed.
 async function loadFrames() {
   const url =
-    `${GEOMET}?lang=en&service=WMS&version=1.3.0&request=GetCapabilities` +
-    `&LAYERS=${encodeURIComponent(SMOKE_LAYERS.sfc.layer)}`;
+      `${GEOMET}?lang=en&service=WMS&version=1.3.0&request=GetCapabilities` +
+      `&LAYERS=${encodeURIComponent(SMOKE_LAYERS.sfc.layer)}`;
   const xml = new DOMParser().parseFromString(await (await fetch(url)).text(), "text/xml");
 
   const dim = [...xml.querySelectorAll("Dimension")].find((d) => d.getAttribute("name") === "time");
@@ -367,8 +374,8 @@ async function loadFrames() {
   // Open on the frame closest to now, so the map opens on the present.
   const now = Date.now();
   const nearest = frames.reduce(
-    (best, t, i) => (Math.abs(t - now) < Math.abs(frames[best] - now) ? i : best),
-    0
+      (best, t, i) => (Math.abs(t - now) < Math.abs(frames[best] - now) ? i : best),
+      0
   );
   timeInput.value = String(nearest);
 }
@@ -437,11 +444,11 @@ function gridUrl(ms) {
   const coverage = analysisLatest !== null && ms <= analysisLatest ? WCS_ANALYSIS : WCS_FORECAST;
   const { latMin, latMax, lonMin, lonMax } = GRID_BBOX;
   return (
-    `${GEOMET}?service=WCS&version=2.0.1&request=GetCoverage` +
-    `&coverageId=${encodeURIComponent(coverage)}&format=image/tiff` +
-    `&subset=lat(${latMin},${latMax})&subset=long(${lonMin},${lonMax})` +
-    `&scalesize=long(${GRID_SIZE.x}),lat(${GRID_SIZE.y})` +
-    `&time=${wmsTime(ms)}`
+      `${GEOMET}?service=WCS&version=2.0.1&request=GetCoverage` +
+      `&coverageId=${encodeURIComponent(coverage)}&format=image/tiff` +
+      `&subset=lat(${latMin},${latMax})&subset=long(${lonMin},${lonMax})` +
+      `&scalesize=long(${GRID_SIZE.x}),lat(${GRID_SIZE.y})` +
+      `&time=${wmsTime(ms)}`
   );
 }
 
@@ -484,13 +491,13 @@ async function ensureGrids(atMs, hours, onProgress) {
   const total = queue.length;
 
   await Promise.all(
-    Array.from({ length: 6 }, async () => {
-      while (queue.length) {
-        await fetchGrid(queue.shift());
-        pending--;
-        onProgress?.(pending, total);
-      }
-    })
+      Array.from({ length: 6 }, async () => {
+        while (queue.length) {
+          await fetchGrid(queue.shift());
+          pending--;
+          onProgress?.(pending, total);
+        }
+      })
   );
 }
 
@@ -533,8 +540,8 @@ async function loadFires() {
     outputFormat: "application/json",
     srsName: "EPSG:4326",
     CQL_FILTER:
-      `BBOX(geometry,${lonMin},${latMin},${lonMax},${latMax},'EPSG:4326')` +
-      ` AND area > ${FIRE_MIN_AREA_HA} AND lastdate AFTER ${since}`,
+        `BBOX(geometry,${lonMin},${latMin},${lonMax},${latMax},'EPSG:4326')` +
+        ` AND area > ${FIRE_MIN_AREA_HA} AND lastdate AFTER ${since}`,
   });
 
   const res = await fetch(`${CWFIS}?${params}`);
@@ -558,10 +565,10 @@ async function loadFires() {
 const stageFor = (zoom) => MERGE_STAGES.find((s) => zoom - map.getMinZoom() >= s.aboveFloor);
 
 const meanLatLng = (members) =>
-  L.latLng(
-    members.reduce((sum, f) => sum + f.at.lat, 0) / members.length,
-    members.reduce((sum, f) => sum + f.at.lng, 0) / members.length
-  );
+    L.latLng(
+        members.reduce((sum, f) => sum + f.at.lat, 0) / members.length,
+        members.reduce((sum, f) => sum + f.at.lng, 0) / members.length
+    );
 
 // Greedy clustering on real ground distance. Stable within a stage, so nothing
 // moves until a boundary is crossed.
@@ -594,7 +601,7 @@ function clusterFires(zoom) {
 }
 
 const fireIconHtml = (area) =>
-  `<span style="font-size:${Math.round(16 + Math.min(Math.sqrt(area) / 4, 18))}px">🔥</span>`;
+    `<span style="font-size:${Math.round(16 + Math.min(Math.sqrt(area) / 4, 18))}px">🔥</span>`;
 
 function firePopup(fire) {
   return `<div class="popup-title">Active fire</div>
@@ -620,8 +627,8 @@ function addFire(fire, from) {
     // Keep fires above the cigarette circles; they're the cause, not the effect.
     zIndexOffset: 1000,
   })
-    .bindPopup(firePopup(fire))
-    .addTo(fireLayer);
+      .bindPopup(firePopup(fire))
+      .addTo(fireLayer);
 
   if (!from) return;
 
@@ -663,19 +670,19 @@ function addOrb(cluster, gatherFrom = []) {
     icon: L.divIcon({
       className: "fire-orb",
       html:
-        `<span class="orb-flame" style="font-size:${size}px">🔥</span>` +
-        `<span class="orb-count">${cluster.members.length}</span>`,
+          `<span class="orb-flame" style="font-size:${size}px">🔥</span>` +
+          `<span class="orb-count">${cluster.members.length}</span>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
     }),
     zIndexOffset: 900, // just under the individual fires
   })
-    .bindPopup(
-      `<div class="popup-title">${cluster.members.length} fires burning here</div>
+      .bindPopup(
+          `<div class="popup-title">${cluster.members.length} fires burning here</div>
        <div class="popup-cigs" style="color:#fb923c">${Math.round(totalArea).toLocaleString()} ha</div>
        <div class="popup-meta">zoom in to separate them</div>`
-    )
-    .addTo(fireLayer);
+      )
+      .addTo(fireLayer);
 
   if (!gatherFrom.length) return;
 
@@ -748,8 +755,8 @@ map.on("zoomend", () => {
 // come from the forecast, so the boundary decides which coverage each hour uses.
 async function loadAnalysisRange() {
   const url =
-    `${GEOMET}?lang=en&service=WMS&version=1.3.0&request=GetCapabilities` +
-    `&LAYERS=${encodeURIComponent(WCS_ANALYSIS)}`;
+      `${GEOMET}?lang=en&service=WMS&version=1.3.0&request=GetCapabilities` +
+      `&LAYERS=${encodeURIComponent(WCS_ANALYSIS)}`;
   const xml = new DOMParser().parseFromString(await (await fetch(url)).text(), "text/xml");
   const dim = [...xml.querySelectorAll("Dimension")].find((d) => d.getAttribute("name") === "time");
   const latest = dim?.getAttribute("default");
@@ -781,8 +788,8 @@ function settleRadii() {
   cancelAnimationFrame(settleFrame);
   const zoom = map.getZoom();
   const items = [...markers.values()]
-    .filter((m) => m.__cigs !== undefined)
-    .map((m) => ({ m, from: m.getRadius(), to: targetRadius(m, zoom) }));
+      .filter((m) => m.__cigs !== undefined)
+      .map((m) => ({ m, from: m.getRadius(), to: targetRadius(m, zoom) }));
   if (!items.length) return;
 
   // requestAnimationFrame is dead in a backgrounded tab, which would leave the
@@ -844,8 +851,8 @@ function render() {
   showFrame(Number(timeInput.value));
 
   const rows = LOCATIONS.map((loc) => ({ ...loc, cigs: cigarettesAt(loc, atMs, hours) }))
-    .filter((r) => r.cigs !== null)
-    .sort((a, b) => b.cigs - a.cigs);
+      .filter((r) => r.cigs !== null)
+      .sort((a, b) => b.cigs - a.cigs);
 
   for (const row of rows) {
     const color = colorFor(row.cigs);
@@ -886,15 +893,15 @@ function render() {
   }
 
   rankingEl.innerHTML = rows
-    .map(
-      (row) => `
+      .map(
+          (row) => `
       <li data-name="${row.name}">
         <span class="dot" style="background:${colorFor(row.cigs)}"></span>
         <span class="name">${row.name}</span>
         <span class="cigs">${format(row.cigs)}</span>
       </li>`
-    )
-    .join("");
+      )
+      .join("");
 }
 
 function stopPlaying() {
@@ -911,9 +918,9 @@ function setStatus() {
   const atMs = frames[Number(timeInput.value)] ?? Date.now();
   const window = `ECCC 10 km · ${describeWindow(atMs, Number(hoursInput.value))}`;
   statusEl.textContent =
-    buffered < frames.length
-      ? `${window} · buffering animation ${buffered}/${frames.length}`
-      : `${window} · ${frames.length} frames ready`;
+      buffered < frames.length
+          ? `${window} · buffering animation ${buffered}/${frames.length}`
+          : `${window} · ${frames.length} frames ready`;
 }
 
 // Every scrub needs the 24h behind the new frame, so coalesce bursts of slider
@@ -994,10 +1001,10 @@ init();
 // fetched rather than served stale.
 setInterval(() => {
   loadAnalysisRange()
-    .then(() => {
-      gridCache.delete(analysisLatest);
-      return update();
-    })
-    .catch(() => {});
+      .then(() => {
+        gridCache.delete(analysisLatest);
+        return update();
+      })
+      .catch(() => {});
   loadFires().catch(() => {});
 }, 30 * 60 * 1000);
