@@ -1,0 +1,377 @@
+:root {
+  --bg: #12100f;
+  --panel: #1c1917;
+  --border: #332f2c;
+  --text: #f5f0eb;
+  --muted: #a8a29e;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#map {
+  flex: 1;
+  height: 100%;
+  background: var(--bg);
+}
+
+#panel {
+  width: 360px;
+  flex-shrink: 0;
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+}
+
+h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  margin: 6px 0 20px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.control { margin-bottom: 18px; }
+
+.control label,
+.control-label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+
+.segmented {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.segmented button {
+  flex: 1;
+  padding: 7px 4px;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.segmented button.active {
+  background: #fb923c;
+  color: #1c1917;
+  font-weight: 600;
+}
+
+.hint {
+  margin: 7px 0 0;
+  font-size: 11px;
+  color: #78716c;
+  line-height: 1.4;
+}
+
+.time-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+#play {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+#play:hover { border-color: #fb923c; color: #fb923c; }
+
+#time-label {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+#time { width: 100%; accent-color: #fb923c; }
+#time:disabled { opacity: 0.4; }
+
+.control output {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+#hours {
+  width: 100%;
+  accent-color: #fb923c;
+}
+
+.status {
+  margin: 16px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.status.error { color: #f87171; }
+
+#ranking {
+  list-style: none;
+  counter-reset: rank;
+  margin: 0 0 20px;
+  padding: 0;
+}
+
+#ranking li {
+  counter-increment: rank;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#ranking li:hover { color: #fb923c; }
+
+#ranking li::before {
+  content: counter(rank);
+  color: var(--muted);
+  font-size: 11px;
+  width: 16px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+#ranking .name { flex: 1; }
+
+#ranking .cigs {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+#ranking .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--muted);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 6px;
+}
+
+.legend-title {
+  display: block;
+  width: 100%;
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.legend-wms {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.legend-wms img {
+  max-width: 100%;
+  margin-top: 6px;
+  background: #f5f0eb;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+footer {
+  margin-top: 16px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+footer p { margin: 0 0 10px; }
+footer strong { color: var(--text); }
+.caveat { font-style: italic; }
+footer a { color: #fb923c; }
+
+.fire-icon {
+  display: grid;
+  place-items: center;
+  /* The emoji sits on a busy plume; a dark halo keeps it readable. */
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.9));
+  cursor: pointer;
+}
+
+/* Fires escaping an orb, or being pulled back into one: Leaflet positions markers
+   with a transform, so transitioning that property is what carries them. */
+.fire-icon.fire-flying {
+  transition:
+    transform var(--fire-fly, 520ms) cubic-bezier(0.22, 1, 0.36, 1),
+    opacity var(--fire-fly, 520ms) ease-in;
+}
+
+.fire-icon.fire-emerging {
+  animation: fire-emerge var(--fire-fly, 520ms) ease-out;
+}
+
+/* Applied after a reflow, so the opacity drop transitions instead of jumping. */
+.fire-icon.fire-merging {
+  opacity: 0;
+}
+
+@keyframes fire-emerge {
+  0% { opacity: 0.2; }
+  40% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* The orb swelling up as the flames arrive. Opacity only — the root element's
+   transform is Leaflet's. */
+.fire-orb.orb-gathering {
+  animation: orb-gather var(--fire-fly, 520ms) ease-out;
+}
+
+@keyframes orb-gather {
+  0% { opacity: 0; }
+  55% { opacity: 0.35; }
+  100% { opacity: 1; }
+}
+
+/* A cluster is the same flame as a lone fire, just bigger and lit — enough of a
+   glow to read as "several burning here", not a separate kind of object. */
+.fire-orb {
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.fire-orb .orb-flame {
+  /* Warm halo for the glow, plus the same dark one the lone fires use so the
+     emoji stays legible against the plume. */
+  filter:
+    drop-shadow(0 0 5px rgba(255, 170, 60, 0.85))
+    drop-shadow(0 0 11px rgba(255, 90, 20, 0.45))
+    drop-shadow(0 0 2px rgba(0, 0, 0, 0.85));
+  animation: orb-breathe 2.8s ease-in-out infinite;
+  line-height: 1;
+}
+
+/* Leaflet already positions the marker element absolutely, so this anchors to it
+   without needing position:relative (which would break that positioning). */
+.fire-orb .orb-count {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid #fb923c;
+  background: rgba(24, 20, 18, 0.92);
+  color: #fb923c;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Subtle: it should look like a flame flickering, not a pulsing beacon. */
+@keyframes orb-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.94; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fire-orb .orb-flame { animation: none; }
+  .fire-icon.fire-flying { transition: none; }
+  .fire-icon.fire-emerging { animation: none; }
+  .fire-orb.orb-gathering { animation: none; }
+}
+
+.popup-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+.popup-cigs { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+.popup-meta { font-size: 12px; color: #57534e; }
+
+.popup-compare {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+}
+
+.compare-head {
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.compare-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0;
+}
+
+.compare-row em { font-style: normal; color: #78716c; }
+.compare-row b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.compare-warn {
+  margin-top: 6px;
+  color: #fb923c;
+  line-height: 1.4;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--panel);
+  color: var(--text);
+}
+
+.leaflet-popup-content .popup-meta { color: var(--muted); }
+
+@media (max-width: 760px) {
+  body { flex-direction: column; }
+  #map { height: 45vh; flex: none; }
+  #panel { width: 100%; flex: 1; border-left: none; border-top: 1px solid var(--border); }
+}
