@@ -276,12 +276,32 @@ h1 {
 .caveat { font-style: italic; }
 .intro a { color: #fb923c; }
 
-.fire-icon {
-  display: grid;
-  place-items: center;
-  /* The emoji sits on a busy plume; a dark halo keeps it readable. */
-  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.9));
+/* Two translucent discs stacked concentrically. The smaller one sits inside the
+   larger, so their alpha compounds toward the middle and the marker reads as a
+   glowing dot. Both are absolute: Leaflet already positions the marker root, so
+   they anchor to it without needing position:relative (which would break that). */
+   Shared by lone fires and clusters alike: a cluster is the same dot, just larger
+   and carrying a count. */
+.fire-icon,
+.fire-orb {
   cursor: pointer;
+}
+
+.fire-halo,
+.fire-core {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.fire-halo {
+  inset: 0;
+  background: rgba(249, 115, 22, 0.34);
+  box-shadow: 0 0 7px rgba(249, 115, 22, 0.45);
+}
+
+.fire-core {
+  inset: 27%;
+  background: rgba(254, 200, 110, 0.55);
 }
 
 /* Fires escaping an orb, or being pulled back into one: Leaflet positions markers
@@ -319,25 +339,6 @@ h1 {
   100% { opacity: 1; }
 }
 
-/* A cluster is the same flame as a lone fire, just bigger and lit — enough of a
-   glow to read as "several burning here", not a separate kind of object. */
-.fire-orb {
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-
-.fire-orb .orb-flame {
-  /* Warm halo for the glow, plus the same dark one the lone fires use so the
-     emoji stays legible against the plume. */
-  filter:
-    drop-shadow(0 0 5px rgba(255, 170, 60, 0.85))
-    drop-shadow(0 0 11px rgba(255, 90, 20, 0.45))
-    drop-shadow(0 0 2px rgba(0, 0, 0, 0.85));
-  animation: orb-breathe 2.8s ease-in-out infinite;
-  line-height: 1;
-}
-
 /* Leaflet already positions the marker element absolutely, so this anchors to it
    without needing position:relative (which would break that positioning). */
 .fire-orb .orb-count {
@@ -359,14 +360,7 @@ h1 {
   pointer-events: none;
 }
 
-/* Subtle: it should look like a flame flickering, not a pulsing beacon. */
-@keyframes orb-breathe {
-  0%, 100% { transform: scale(1); opacity: 0.94; }
-  50% { transform: scale(1.05); opacity: 1; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .fire-orb .orb-flame { animation: none; }
   .fire-icon.fire-flying { transition: none; }
   .fire-icon.fire-emerging { animation: none; }
   .fire-orb.orb-gathering { animation: none; }

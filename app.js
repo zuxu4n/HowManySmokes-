@@ -622,8 +622,10 @@ function clusterFires(zoom) {
   return clusters;
 }
 
-const fireIconHtml = (area) =>
-    `<span style="font-size:${Math.round(16 + Math.min(Math.sqrt(area) / 4, 18))}px">🔥</span>`;
+// Two stacked translucent discs: a full-size halo with a smaller, brighter core.
+// Their alpha compounds where they overlap, which is what reads as a glow. Sized
+// by the marker's iconSize, so the spans need no inline dimensions.
+const FIRE_HTML = `<span class="fire-halo"></span><span class="fire-core"></span>`;
 
 function firePopup(fire) {
   return `<div class="popup-title">Active fire</div>
@@ -642,14 +644,11 @@ function addFire(fire, from) {
   const marker = L.marker(from ?? fire.at, {
     icon: L.divIcon({
       className: "fire-icon",
-      html: fireIconHtml(fire.area),
+      html: FIRE_HTML,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
-      // The emoji glyph doesn't fill its span evenly — it renders visually left
-      // of the span's true center — so Leaflet's default popup position, which
-      // centers on iconAnchor, lands a few px left of the icon itself. Nudge it
-      // right to re-center over what's actually drawn on screen.
-      popupAnchor: [10, -8],
+      // No popupAnchor nudge: the discs fill the icon box evenly and sit dead
+      // centre, unlike the emoji glyph this replaced.
     }),
     // Keep fires above the cigarette circles; they're the cause, not the effect.
     zIndexOffset: 1000,
@@ -695,22 +694,17 @@ function previousSpots(cluster, previous) {
 
 function addOrb(cluster, gatherFrom = []) {
   const totalArea = cluster.members.reduce((sum, f) => sum + f.area, 0);
-  // Sized to sit just above a lone fire (16-34px). The old range topped out at
-  // 68px, which suited a soft blurred orb but is heavy for a solid emoji — and it
-  // saturated so often that size stopped telling you anything. The badge carries
-  // the count; this only needs to say "bigger than one fire".
+  // Same glowing dot as a lone fire, just larger and carrying a count. Sized to
+  // sit above the 16-34px of a single one without swallowing the map; the badge
+  // does the counting, so this only needs to say "more than one".
   const size = Math.round(28 + Math.min(Math.sqrt(totalArea) / 8, 22));
 
   const orb = L.marker(cluster.at, {
     icon: L.divIcon({
       className: "fire-orb",
-      html:
-          `<span class="orb-flame" style="font-size:${size}px">🔥</span>` +
-          `<span class="orb-count">${cluster.members.length}</span>`,
+      html: FIRE_HTML + `<span class="orb-count">${cluster.members.length}</span>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
-      // Same emoji-centering nudge as the individual fire icon, see there.
-      popupAnchor: [10, -8],
     }),
     zIndexOffset: 900, // just under the individual fires
   })
@@ -740,7 +734,7 @@ function addOrb(cluster, gatherFrom = []) {
   // being pulled in rather than blinking out.
   for (const from of gatherFrom) {
     const ghost = L.marker(from, {
-      icon: L.divIcon({ className: "fire-icon", html: "<span>🔥</span>", iconSize: [20, 20], iconAnchor: [10, 10] }),
+      icon: L.divIcon({ className: "fire-icon", html: FIRE_HTML, iconSize: [20, 20], iconAnchor: [10, 10] }),
       interactive: false,
       zIndexOffset: 950,
     }).addTo(fireLayer);
