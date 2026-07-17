@@ -623,11 +623,24 @@ function addFire(fire, from) {
       html: fireIconHtml(fire.area),
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
+      // The emoji glyph doesn't fill its span evenly — it renders visually left
+      // of the span's true center — so Leaflet's default popup position, which
+      // centers on iconAnchor, lands a few px left of the icon itself. Nudge it
+      // right to re-center over what's actually drawn on screen.
+      popupAnchor: [10, -8],
     }),
     // Keep fires above the cigarette circles; they're the cause, not the effect.
     zIndexOffset: 1000,
   })
       .bindPopup(firePopup(fire))
+      // Hover opens/closes it; click still works too, since touch devices have
+      // no hover at all and rely on the tap.
+      .on("mouseover", function () {
+        this.openPopup();
+      })
+      .on("mouseout", function () {
+        this.closePopup();
+      })
       .addTo(fireLayer);
 
   if (!from) return;
@@ -674,6 +687,8 @@ function addOrb(cluster, gatherFrom = []) {
           `<span class="orb-count">${cluster.members.length}</span>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
+      // Same emoji-centering nudge as the individual fire icon, see there.
+      popupAnchor: [10, -8],
     }),
     zIndexOffset: 900, // just under the individual fires
   })
@@ -682,6 +697,12 @@ function addOrb(cluster, gatherFrom = []) {
        <div class="popup-cigs" style="color:#fb923c">${Math.round(totalArea).toLocaleString()} ha</div>
        <div class="popup-meta">zoom in to separate them</div>`
       )
+      .on("mouseover", function () {
+        this.openPopup();
+      })
+      .on("mouseout", function () {
+        this.closePopup();
+      })
       .addTo(fireLayer);
 
   if (!gatherFrom.length) return;
