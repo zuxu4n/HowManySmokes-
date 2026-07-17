@@ -85,12 +85,24 @@ only when a boundary is crossed. Screen-distance clustering reshuffles at every
 zoom, which reads as drift rather than deliberate merges. Bands are measured from
 `minZoom`, so they adapt to any window size. Measured:
 
-| | Zoom | Distance | Groups | Orbs | Biggest |
-| --- | --- | --- | --- | --- | --- |
-| apart | 10.0 | — | 53 | 0 | 1 |
-| merge 1 | 8.62 | 30 km | 28 | 17 | 4 |
-| merge 2 | 7.02 | 100 km | 12 | 9 | 11 |
-| *(floor)* | 5.02 | 100 km | 12 | 9 | 11 |
+| | Zoom | `aboveFloor` | Distance | Groups | Orbs | Biggest |
+| --- | --- | --- | --- | --- | --- | --- |
+| apart | 10.0 | 2.8+ | — | 55 | 0 | 1 |
+| merge 1 | 7.72 | 1.3–2.8 | 30 km | 31 | 17 | 4 |
+| merge 2 | 6.22 | below 1.3 | 100 km | 13 | 10 | 12 |
+| *(floor)* | 5.02 | 0 | 100 km | 13 | 10 | 12 |
+
+`aboveFloor` is the knob for *when* each transition fires: lower it and you reach
+the split with less zooming in (and, going the other way, scroll further out
+before the merge). `km` is *how hard* that stage merges.
+
+Merge 1 sits at **1.45** so the first split lands on the **4th scroll notch** up
+from the floor. That number is tied to `wheelPxPerZoomLevel` and to how much
+`deltaY` the wheel reports — 0.387 zoom/notch at `deltaY 100`, 0.461 at the `120`
+some Windows setups send. Three notches reach 1.16 or 1.38; four reach 1.55 or
+1.84. Only `(1.383, 1.547]` fires on the fourth notch under *both*, which is why
+it's 1.45 and not a rounder number. **Change `wheelPxPerZoomLevel` and this needs
+rechecking.**
 
 The last band runs all the way to the floor, so the map never collapses into a
 single orb.

@@ -142,6 +142,23 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
   maxZoom: 19,
 }).addTo(map);
 
+// The PM2.5 scale belongs over the thing it explains. L.Control is the same
+// mechanism the zoom buttons and attribution use, so it stays pinned to the
+// corner while the map moves under it. Added here, before init() calls
+// setSmokeLayer(), which fills in the image's src.
+const legendControl = L.control({ position: "bottomleft" });
+legendControl.onAdd = () => {
+  const box = L.DomUtil.create("div", "map-legend");
+  box.innerHTML =
+    `<span class="map-legend-title">Smoke PM2.5</span>` +
+    `<img id="wms-legend" alt="PM2.5 colour scale">`;
+  // Without these, dragging or scrolling on the legend pans and zooms the map.
+  L.DomEvent.disableClickPropagation(box);
+  L.DomEvent.disableScrollPropagation(box);
+  return box;
+};
+legendControl.addTo(map);
+
 // The circles are L.circle (radius in *metres*), not L.circleMarker (pixels).
 // Leaflet's zoom animation CSS-scales the renderer, so a geographic circle tracks
 // it exactly: it stays on screen and grows with the map instead of ballooning and
@@ -262,9 +279,14 @@ const FIRE_ACTIVE_HOURS = 24; // "currently burning" = detected again since then
 // Distances tuned against the live fire set (53 fires spanning 1194 km):
 // 53 apart -> 28 groups -> 12 groups. The last band runs to the zoom floor, so
 // the map never collapses to a single orb.
+// 1.45 is picked so the first split lands on the 4th scroll notch from the floor.
+// A notch is 0.387 zoom at deltaY 100, or 0.461 at the deltaY 120 some Windows
+// setups report — so three notches reach 1.16 or 1.38, and four reach 1.55 or
+// 1.84. Anything in (1.383, 1.547] fires on the fourth for both; 1.45 sits in the
+// middle of that. It follows wheelPxPerZoomLevel: change one and recheck the other.
 const MERGE_STAGES = [
   { aboveFloor: 2.8, km: 0 }, // every fire on its own
-  { aboveFloor: 1.3, km: 30 }, // merge 1
+  { aboveFloor: 1.45, km: 30 }, // merge 1: first split, 4 notches up from the floor
   { aboveFloor: -Infinity, km: 100 }, // merge 2, and it stays this way down to the floor
 ];
 
@@ -843,7 +865,6 @@ function settleRadii() {
 map.on("zoomstart", () => cancelAnimationFrame(settleFrame));
 map.on("zoomend", settleRadii);
 
-window.__dbg = { map, get stageFor() { return stageFor; }, get clusterFires() { return clusterFires; }, get fires() { return fires; } };
 
 const isMeasured = (ms) => analysisLatest !== null && ms <= analysisLatest;
 
