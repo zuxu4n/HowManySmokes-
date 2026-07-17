@@ -6,72 +6,76 @@
   <title>How Many Smokes? Ontario wildfire smoke map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
-  <div id="map"></div>
+<div id="map"></div>
 
-  <aside id="panel">
-    <header>
-      <h1>How Many Smokes?</h1>
-      <p class="tagline">Live wildfire smoke over Ontario, and what breathing it
+<aside id="panel">
+  <header>
+    <h1>How Many Smokes?</h1>
+    <p class="tagline">Live wildfire smoke over Ontario, and what breathing it
       costs you in cigarettes.</p>
-    </header>
+  </header>
 
-    <div class="control">
-      <span class="control-label">Smoke layer</span>
-      <div class="segmented" id="layer-toggle">
-        <button data-layer="sfc" class="active">Ground level</button>
-        <button data-layer="eatm">Full column</button>
-      </div>
-      <p class="hint" id="layer-hint">What you'd actually breathe at street level.</p>
+  <div class="control">
+    <span class="control-label">Smoke layer</span>
+    <div class="segmented" id="layer-toggle">
+      <button data-layer="sfc" class="active">Ground level</button>
+      <button data-layer="eatm">Full column</button>
     </div>
+    <p class="hint" id="layer-hint">What you'd actually breathe at street level.</p>
+  </div>
 
-    <div class="control">
-      <div class="time-row">
-        <button id="play" aria-label="Play animation">▶</button>
-        <span id="time-label">…</span>
-      </div>
-      <input type="range" id="time" min="0" max="0" value="0" step="1" disabled>
+  <div class="control">
+    <div class="time-row">
+      <button id="play" aria-label="Play animation">▶</button>
+      <span id="time-label">…</span>
     </div>
+    <input type="range" id="time" min="0" max="0" value="0" step="1" disabled>
+  </div>
 
-    <div class="control">
-      <label for="hours">Hours spent outside: <output id="hours-out">24</output></label>
-      <input type="range" id="hours" min="1" max="24" value="24" step="1">
-    </div>
+  <div class="control">
+    <label for="hours">Hours spent outside: <output id="hours-out">24</output></label>
+    <input type="range" id="hours" min="1" max="24" value="24" step="1">
+  </div>
 
-    <div id="status" class="status">Loading…</div>
+  <div id="status" class="status">Loading…</div>
 
-    <ol id="ranking"></ol>
+  <ol id="ranking"></ol>
 
-    <div class="legend">
-      <span class="legend-title">Cigarettes</span>
-      <span class="swatch" style="background:#4ade80"></span> under ½
-      <span class="swatch" style="background:#facc15"></span> 1–2
-      <span class="swatch" style="background:#fb923c"></span> 2–4
-      <span class="swatch" style="background:#ef4444"></span> 4–8
-      <span class="swatch" style="background:#a855f7"></span> 8+
-    </div>
+  <div class="legend">
+    <span class="legend-title">Cigarettes</span>
+    <span class="swatch" style="background:#4ade80"></span> under ½
+    <span class="swatch" style="background:#facc15"></span> 1–2
+    <span class="swatch" style="background:#fb923c"></span> 2–4
+    <span class="swatch" style="background:#ef4444"></span> 4–8
+    <span class="swatch" style="background:#a855f7"></span> 8+
+  </div>
 
 
-    <div class="legend-wms">
-      <span class="legend-title">Smoke PM2.5</span>
-      <img id="wms-legend" alt="PM2.5 colour scale">
-    </div>
+  <div class="legend-wms">
+    <span class="legend-title">Smoke PM2.5</span>
+    <img id="wms-legend" alt="PM2.5 colour scale">
+  </div>
 
-    <footer>
-      <p><strong>Berkeley Earth's Rule of Thumb:</strong> Breathing
+  <footer>
+    <p><strong>Berkeley Earth's Rule of Thumb:</strong> Breathing
       22 µg/m³ of PM2.5 for 24 hours carries roughly the same mortality risk as
       one cigarette. Summed hour by hour.</p>
-      <p class="caveat">Wildfire smoke and tobacco
+    <p class="caveat">Wildfire smoke and tobacco
       smoke are not the exact same thing. This data does not include acute effects.</p>
-      <p class="credit">Smoke &amp; PM2.5:
+    <p class="credit">Smoke &amp; PM2.5:
       <a href="https://eccc-msc.github.io/open-data/msc-data/nwp_raqdps-fw/readme_raqdps-fw_en/" target="_blank" rel="noopener">ECCC GeoMet</a>
       (RDAQA analysis for past hours, RAQDPS forecast ahead, both 10 km) ·
       Method: <a href="https://berkeleyearth.org/air-pollution-and-cigarette-equivalence/" target="_blank" rel="noopener">Berkeley Earth</a></p>
-    </footer>
-  </aside>
+  </footer>
+</aside>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
