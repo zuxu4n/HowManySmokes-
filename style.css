@@ -211,6 +211,26 @@ h1 {
   margin-bottom: 2px;
 }
 
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 18px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* The mark is fill="currentColor", so it warms up with the text. */
+.github-link:hover {
+  border-color: #fb923c;
+  color: #fb923c;
+}
+
 /* Pinned to the map's bottom-left corner via L.Control, the way a compass rose
    sits on a chart. It floats over a dark basemap, so it carries its own panel. */
 .map-legend {
