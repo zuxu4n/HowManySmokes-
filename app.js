@@ -815,6 +815,8 @@ function settleRadii() {
 map.on("zoomstart", () => cancelAnimationFrame(settleFrame));
 map.on("zoomend", settleRadii);
 
+window.__dbg = { map, get stageFor() { return stageFor; }, get clusterFires() { return clusterFires; }, get fires() { return fires; } };
+
 const isMeasured = (ms) => analysisLatest !== null && ms <= analysisLatest;
 
 // A 24h window straddles the analysis/forecast boundary, so naming it after its
