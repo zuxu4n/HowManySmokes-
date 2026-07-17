@@ -1,9 +1,15 @@
 :root {
-  --bg: #12100f;
-  --panel: #1c1917;
-  --border: #332f2c;
-  --text: #f5f0eb;
-  --muted: #a8a29e;
+  /* Neutrals deliberately off the Tailwind stone ramp: a warmer, deeper cast so
+     it reads as instrument housing rather than a default dashboard. */
+  --bg: #0d0c0b;
+  --panel: #16130f;
+  --border: #2b2620;
+  --text: #ece6da;
+  --muted: #938a7c;
+  --faint: #6a6154;
+  --accent: #fb923c; /* ties to the plume and fire markers on the map */
+  --mono: "SFMono-Regular", "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
   color-scheme: dark;
 }
 
@@ -11,7 +17,7 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--sans);
   background: var(--bg);
   color: var(--text);
   display: flex;
@@ -26,9 +32,9 @@ body {
 }
 
 #panel {
-  width: 360px;
+  width: 344px;
   flex-shrink: 0;
-  padding: 24px;
+  padding: 22px 22px 26px;
   overflow-y: auto;
   background: var(--panel);
   border-left: 1px solid var(--border);
@@ -36,60 +42,77 @@ body {
 
 h1 {
   margin: 0;
-  font-size: 26px;
-  letter-spacing: -0.02em;
+  /* Serif headline: the strongest single signal away from the all-sans default,
+     and it suits the scientific-instrument register. */
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  font-size: 27px;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
 }
 
 .tagline {
-  margin: 6px 0 20px;
+  margin: 8px 0 18px;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13.5px;
+  line-height: 1.55;
+  max-width: 30ch;
 }
 
-.control { margin-bottom: 18px; }
+.control {
+  margin-bottom: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
 
+/* Uppercase, tracked, monospace: an instrument label, not a form field. */
 .control label,
 .control-label {
   display: block;
-  font-size: 13px;
-  margin-bottom: 8px;
-  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  color: var(--faint);
 }
 
-.control-label {
-  font-weight: 600;
-}
+.control-label { color: var(--muted); }
 
 .segmented {
   display: flex;
+  gap: 0;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
 }
 
 .segmented button {
   flex: 1;
-  padding: 7px 4px;
+  padding: 8px 4px;
   background: transparent;
   border: 0;
+  border-right: 1px solid var(--border);
   color: var(--muted);
-  font-size: 12px;
-  font-family: inherit;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
   cursor: pointer;
+  transition: color 0.12s, background 0.12s;
 }
 
+.segmented button:last-child { border-right: 0; }
+.segmented button:hover { color: var(--text); }
+
 .segmented button.active {
-  background: #fb923c;
-  color: #1c1917;
+  background: var(--accent);
+  color: #16130f;
   font-weight: 600;
 }
 
 .hint {
-  margin: 7px 0 0;
-  font-size: 11px;
-  color: #78716c;
-  line-height: 1.4;
+  margin: 9px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .time-row {
@@ -100,46 +123,57 @@ h1 {
 }
 
 #play {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
-  border-radius: 50%;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text);
-  font-size: 10px;
+  font-size: 9px;
   cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
 }
 
-#play:hover { border-color: #fb923c; color: #fb923c; }
+#play:hover { border-color: var(--accent); color: var(--accent); }
 
 #time-label {
+  font-family: var(--mono);
   font-size: 13px;
-  font-weight: 600;
+  letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
 }
 
-#time { width: 100%; accent-color: #fb923c; }
+#time { width: 100%; accent-color: var(--accent); }
 #time:disabled { opacity: 0.4; }
 
+.control label { display: block; }
+
 .control output {
+  font-family: var(--mono);
   color: var(--text);
-  font-weight: 600;
+  letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
+  text-transform: none;
 }
 
 #hours {
   width: 100%;
-  accent-color: #fb923c;
+  margin-top: 2px;
+  accent-color: var(--accent);
 }
 
 .status {
-  margin: 16px 0;
-  font-size: 12px;
+  margin: 18px 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
   color: var(--muted);
 }
 
-.status.error { color: #f87171; }
+.status.error { color: #e0623f; }
 
 #ranking {
   list-style: none;
@@ -151,37 +185,45 @@ h1 {
 #ranking li {
   counter-increment: rank;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 0;
+  align-items: baseline;
+  gap: 9px;
+  padding: 7px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 14px;
+  font-size: 13.5px;
   cursor: pointer;
 }
 
-#ranking li:hover { color: #fb923c; }
+#ranking li:hover { color: var(--accent); }
 
+/* Zero-padded rank, monospace: reads as a channel index on a readout. */
 #ranking li::before {
-  content: counter(rank);
-  color: var(--muted);
-  font-size: 11px;
-  width: 16px;
+  content: counter(rank, decimal-leading-zero);
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 10px;
+  width: 18px;
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
 }
 
-#ranking .name { flex: 1; }
+#ranking .name {
+  flex: 1;
+  letter-spacing: -0.005em;
+}
 
 #ranking .cigs {
-  font-weight: 600;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
 #ranking .dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .legend {
@@ -191,13 +233,13 @@ h1 {
   flex-wrap: wrap;
   font-size: 11px;
   color: var(--muted);
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
 }
 
 .swatch {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   display: inline-block;
   margin-left: 6px;
@@ -206,49 +248,49 @@ h1 {
 .legend-title {
   display: block;
   width: 100%;
-  color: var(--text);
-  font-weight: 600;
-  margin-bottom: 2px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 6px;
 }
 
 .github-link {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-top: 18px;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  margin-top: 14px;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   text-decoration: none;
 }
 
 /* The mark is fill="currentColor", so it warms up with the text. */
-.github-link:hover {
-  border-color: #fb923c;
-  color: #fb923c;
-}
+.github-link:hover { color: var(--accent); }
 
 /* Pinned to the map's bottom-left corner via L.Control, the way a compass rose
    sits on a chart. It floats over a dark basemap, so it carries its own panel. */
 .map-legend {
-  background: rgba(28, 25, 23, 0.86);
+  background: rgba(22, 19, 15, 0.86);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 7px;
+  padding: 7px 8px;
   backdrop-filter: blur(3px);
-  font-size: 10px;
+  font-family: var(--mono);
+  font-size: 9px;
   color: var(--muted);
   line-height: 1.3;
 }
 
 .map-legend-title {
   display: block;
-  margin-bottom: 4px;
-  color: var(--text);
-  font-weight: 600;
+  margin-bottom: 5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
 }
 
 .map-legend img {
@@ -272,14 +314,15 @@ h1 {
 
 .intro p { margin: 0 0 10px; }
 .intro p:last-child { margin-bottom: 0; }
-.intro strong { color: var(--text); }
-.caveat { font-style: italic; }
-.intro a { color: #fb923c; }
+.intro strong { color: var(--text); font-weight: 600; }
+.caveat { color: var(--faint); }
+.intro a { color: var(--accent); text-decoration: none; }
+.intro a:hover { text-decoration: underline; }
 
 /* Two translucent discs stacked concentrically. The smaller one sits inside the
    larger, so their alpha compounds toward the middle and the marker reads as a
    glowing dot. Both are absolute: Leaflet already positions the marker root, so
-   they anchor to it without needing position:relative (which would break that). */
+   they anchor to it without needing position:relative (which would break that).
    Shared by lone fires and clusters alike: a cluster is the same dot, just larger
    and carrying a count. */
 .fire-icon,
@@ -350,11 +393,12 @@ h1 {
   padding: 0 4px;
   box-sizing: border-box;
   border-radius: 8px;
-  border: 1px solid #fb923c;
-  background: rgba(24, 20, 18, 0.92);
-  color: #fb923c;
+  border: 1px solid var(--accent);
+  background: rgba(22, 19, 15, 0.92);
+  color: var(--accent);
+  font-family: var(--mono);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 14px;
   text-align: center;
   pointer-events: none;
@@ -367,8 +411,14 @@ h1 {
 }
 
 .popup-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-.popup-cigs { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
-.popup-meta { font-size: 12px; color: #57534e; }
+.popup-cigs {
+  font-family: var(--mono);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+.popup-meta { font-size: 12px; color: var(--muted); }
 
 .popup-compare {
   margin-top: 10px;
@@ -389,12 +439,16 @@ h1 {
   padding: 2px 0;
 }
 
-.compare-row em { font-style: normal; color: #78716c; }
-.compare-row b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.compare-row em { font-style: normal; color: var(--faint); }
+.compare-row b {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
 
 .compare-warn {
   margin-top: 6px;
-  color: #fb923c;
+  color: var(--accent);
   line-height: 1.4;
 }
 

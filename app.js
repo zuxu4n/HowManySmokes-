@@ -3,6 +3,14 @@
 const PM25_PER_CIGARETTE_DAY = 22;
 const CIGARETTE_DOSE = PM25_PER_CIGARETTE_DAY * 24; // µg/m³·hours
 
+// Matches the CSS breakpoint that stacks the layout onto a phone-height map (see
+// `@media (max-width: 760px)` in style.css). Circle and fire sizes are tuned for
+// a full-height desktop map; on a 45vh mobile map at the same pixel sizes they
+// dominate the view, so everything shrinks together below this width.
+const MOBILE_QUERY = window.matchMedia("(max-width: 760px)");
+const MOBILE_MARKER_SCALE = 0.6;
+const markerScale = () => (MOBILE_QUERY.matches ? MOBILE_MARKER_SCALE : 1);
+
 const GEOMET = "https://geo.weather.gc.ca/geomet";
 
 // ECCC's RAQDPS wildfire smoke plume, 10 km, hourly to +72h. Ground level is what
@@ -108,7 +116,7 @@ const metresPerPixel = (lat, zoom) =>
 function targetPixels(cigs, zoom) {
   const base = 6 + Math.sqrt(cigs) * 5;
   const growth = Math.min(Math.max(2 ** ((zoom - 5) * 0.3), 1), 2.2);
-  return base * growth;
+  return base * growth * markerScale();
 }
 
 const targetRadius = (marker, zoom) =>
@@ -640,7 +648,7 @@ function firePopup(fire) {
 }
 
 function addFire(fire, from) {
-  const size = Math.round(16 + Math.min(Math.sqrt(fire.area) / 4, 18));
+  const size = Math.round((16 + Math.min(Math.sqrt(fire.area) / 4, 18)) * markerScale());
   const marker = L.marker(from ?? fire.at, {
     icon: L.divIcon({
       className: "fire-icon",
@@ -697,7 +705,7 @@ function addOrb(cluster, gatherFrom = []) {
   // Same glowing dot as a lone fire, just larger and carrying a count. Sized to
   // sit above the 16-34px of a single one without swallowing the map; the badge
   // does the counting, so this only needs to say "more than one".
-  const size = Math.round(28 + Math.min(Math.sqrt(totalArea) / 8, 22));
+  const size = Math.round((28 + Math.min(Math.sqrt(totalArea) / 8, 22)) * markerScale());
 
   const orb = L.marker(cluster.at, {
     icon: L.divIcon({
@@ -732,9 +740,15 @@ function addOrb(cluster, gatherFrom = []) {
 
   // Throwaway flames that fly inward and fade, so the merge reads as the fires
   // being pulled in rather than blinking out.
+  const ghostSize = Math.round(20 * markerScale());
   for (const from of gatherFrom) {
     const ghost = L.marker(from, {
-      icon: L.divIcon({ className: "fire-icon", html: FIRE_HTML, iconSize: [20, 20], iconAnchor: [10, 10] }),
+      icon: L.divIcon({
+        className: "fire-icon",
+        html: FIRE_HTML,
+        iconSize: [ghostSize, ghostSize],
+        iconAnchor: [ghostSize / 2, ghostSize / 2],
+      }),
       interactive: false,
       zIndexOffset: 950,
     }).addTo(fireLayer);
@@ -999,6 +1013,15 @@ timeInput.addEventListener("input", () => {
 });
 
 hoursInput.addEventListener("input", update);
+
+// Rotating a phone or resizing a desktop window can cross the mobile breakpoint
+// mid-session, and neither the circles nor the fires re-check markerScale() on
+// their own — they're only recomputed when something else triggers a render.
+MOBILE_QUERY.addEventListener("change", () => {
+  render();
+  renderFires();
+});
+
 
 el("layer-toggle").addEventListener("click", (e) => {
   const btn = e.target.closest("button");
