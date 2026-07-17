@@ -1,6 +1,6 @@
 # How Many Smokes?
 
-A live, animated map of wildfire smoke over Ontario that answers one question:
+Live, animated, interactive map of wildfire smoke over Ontario that answers one question:
 if you spent the day outside, how many cigarettes would you have effectively
 breathed?
 
@@ -9,8 +9,7 @@ south and Toronto briefly ranked worst in the world for air quality.
 
 ## Running it
 
-No build step, no dependencies beyond Leaflet, no API key. Static files — but it
-must be served over HTTP, since `file://` origins get blocked by CORS.
+Must be served over HTTP, since `file://` origins get blocked by CORS.
 
 ```sh
 python devserver.py 5177
@@ -25,7 +24,7 @@ nothing. It revalidates fine when asked; the browser just doesn't ask.
 
 ## Data: all ECCC, 10 km
 
-Everything on the page — the plume and the numbers — comes from Environment
+Everything on the page — the plume and the numbers.
 Canada's [GeoMet](https://eccc-msc.github.io/open-data/msc-data/nwp_raqdps-fw/readme_raqdps-fw_en/),
 free, no API key, and `Access-Control-Allow-Origin: *` so the browser talks to it
 directly with no backend.
@@ -42,7 +41,7 @@ CORS-enabled: `public:m3_polygons_current` over WFS.
 
 ### Why CWFIS and not NASA FIRMS
 
-FIRMS is the obvious answer and it does work — its WFS endpoint even sends
+FIRMS is the obvious answer and it does work, its WFS endpoint even sends
 `Access-Control-Allow-Origin: *`, so it's callable from the browser. It's still
 the wrong choice here:
 
@@ -58,7 +57,7 @@ the wrong choice here:
   the fires agree with the smoke. FIRMS could show hotspots the smoke model
   doesn't know about.
 
-FIRMS would win if this ever went global — CWFIS is Canada only.
+FIRMS would win if this ever went global, CWFIS is Canada only.
 
 The fires are *current* and don't move with the time scrubber, which is a real
 inconsistency: scrub to +48h and you're seeing tomorrow's smoke over today's
