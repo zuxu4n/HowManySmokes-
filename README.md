@@ -3,6 +3,8 @@
 Live map of wildfire smoke over Ontario, and what breathing it costs you in
 cigarettes.
 
+Made during the northwestern Ontario forest fires.
+
 ```sh
 python devserver.py 5177   # http://localhost:5177
 ```
